@@ -1,0 +1,25 @@
+{
+  "name": "مكتبة المشكاة",
+  "short_name": "المشكاة",
+  "description": "كل ما يحتاجه الطالب والمعلم — كتب، قرطاسية، بحوث، طباعة",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait-primary",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "shopping"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/home.png", "sizes": "390x844", "type": "image/png", "label": "الصفحة الرئيسية" }
+  ],
+  "shortcuts": [
+    { "name": "المتجر",     "url": "./#shop",     "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}] },
+    { "name": "طلب بحث",   "url": "./#requests", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}] },
+    { "name": "طلباتي",    "url": "./#myorders", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}] }
+  ]
+}

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="مكتبة المشكاة — كل ما يحتاجه الطالب والمعلم من كتب وقرطاسية وبحوث وطباعة" />
+<title>مكتبة المشكاة | كل ما يحتاجه الطالب والمعلم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="المشكاة">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          'cairo':   ['Cairo',   'sans-serif'],
+          'amiri':   ['Amiri',   'serif'],
+          'tajawal': ['Tajawal', 'sans-serif'],
+        },
+        colors: {
+          'mishkat-blue': {
+            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe',
+            500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+            800: '#1e3a8a', 900: '#172554',
+          }
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="pattern-bg">
+
+<!-- ── Top Bar ───────────────────────────────────────────── -->
+<div class="bg-mishkat-blue-900 text-white text-sm py-2 px-4">
+  <div class="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-2">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1">📞 0791234567</span>
+      <span class="hidden md:flex items-center gap-1">✉️ info@almishkat.com</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden md:inline">🚚 توصيل مجاني للطلبات فوق 20 دينار</span>
+      <button onclick="showSection('admin')" class="hover:text-yellow-300 transition text-xs">⚙️ لوحة التحكم</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Header ────────────────────────────────────────────── -->
+<header class="bg-white shadow-md sticky top-0 z-40 islamic-pattern">
+  <div class="max-w-7xl mx-auto px-4 py-3">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showSection('home')">
+        <div class="lantern-glow text-4xl">🕌</div>
+        <div>
+          <h1 class="font-display font-black text-2xl text-mishkat-blue-800">مكتبة المشكاة</h1>
+          <p class="font-arabic text-xs text-mishkat-blue-600">نور العلم بين يديك</p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex flex-1 max-w-xl mx-4">
+        <div class="relative w-full">
+          <input id="searchInput" type="text" placeholder="ابحث عن كتاب، قلم، حقيبة..."
+            class="w-full pr-12 pl-4 py-3 rounded-full border-2 border-gray-200 focus:border-mishkat-blue-600 focus:outline-none transition"
+            aria-label="بحث عن منتجات">
+          <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" aria-label="بحث">🔍</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Install PWA -->
+        <button id="installBtn" onclick="installApp()" title="تثبيت التطبيق"
+          class="hidden p-2 hover:bg-mishkat-blue-50 rounded-full transition text-xl" aria-label="تثبيت التطبيق">📲</button>
+        <!-- Dark Mode Toggle -->
+        <button id="darkModeBtn" onclick="toggleDarkMode()" title="تبديل الوضع الليلي"
+          class="p-2 hover:bg-mishkat-blue-50 rounded-full transition text-xl">🌙</button>
+        <!-- Cart -->
+        <button onclick="toggleCart()" class="relative p-2 hover:bg-mishkat-blue-50 rounded-full transition" aria-label="سلة المشتريات">
+          <span class="text-2xl">🛒</span>
+          <span id="cartCount" class="absolute -top-1 -left-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="mt-4 flex items-center gap-1 md:gap-2 overflow-x-auto" aria-label="التنقل الرئيسي">
+      <button onclick="showSection('home')"     data-nav="home"     class="nav-link active px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">🏠 الرئيسية</button>
+      <button onclick="showSection('shop')"     data-nav="shop"     class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">🛍️ المتجر</button>
+      <button onclick="showSection('packages')" data-nav="packages" class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">📦 الحزم المدرسية</button>
+      <button onclick="showSection('requests')" data-nav="requests" class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">📝 طلبات البحوث</button>
+      <button onclick="showSection('printing')" data-nav="printing" class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">🖨️ الطباعة</button>
+      <button onclick="showSection('teachers')" data-nav="teachers" class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">👨‍🏫 المعلمين</button>
+      <button onclick="showSection('myorders')" data-nav="myorders" class="nav-link px-3 py-2 font-semibold text-gray-700 hover:text-mishkat-blue-600 whitespace-nowrap">📋 طلباتي</button>
+    </nav>
+  </div>
+</header>
+
+<main id="mainContent" class="min-h-screen">
+
+<!-- ══════════════════════════════════════════════════════════
+     HOME
+══════════════════════════════════════════════════════════ -->
+<section id="home-section" class="section">
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden bg-gradient-to-br from-mishkat-blue-800 via-mishkat-blue-700 to-mishkat-blue-900 text-white">
+    <div class="absolute inset-0 islamic-pattern opacity-20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-8 items-center">
+      <div class="animate-fade-in-up" style="animation-delay:0.1s">
+        <span class="inline-block bg-yellow-400 text-mishkat-blue-900 px-4 py-1 rounded-full text-sm font-bold mb-4">✨ الأولى في خدمة الطلاب والمعلمين</span>
+        <h2 class="font-display font-black text-4xl md:text-6xl leading-tight mb-4 hero-title">
+          كل ما تحتاجه<br>
+          <span class="text-yellow-300">للعلم والتعلم</span>
+        </h2>
+        <p class="text-lg md:text-xl text-blue-100 mb-6 leading-relaxed">
+          من الكتب المدرسية إلى الأدوات الهندسية، إكسسوارات الكمبيوتر، وحتى طلبات البحوث والمشاريع — كل شيء في مكان واحد.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="showSection('shop')" class="bg-yellow-400 text-mishkat-blue-900 px-8 py-3 rounded-full font-bold hover:bg-yellow-300 transition shadow-lg">
+            🛍️ تسوق الآن
+          </button>
+          <button onclick="showSection('requests')" class="bg-white/10 backdrop-blur border-2 border-white px-8 py-3 rounded-full font-bold hover:bg-white hover:text-mishkat-blue-800 transition">
+            📝 اطلب بحث/مشروع
+          </button>
+        </div>
+      </div>
+      <div class="hidden md:flex justify-center items-center animate-fade-in-up" style="animation-delay:0.3s">
+        <div class="relative">
+          <div class="lantern-glow text-[200px]">🕌</div>
+          <div class="absolute -top-4 -left-4 text-6xl animate-bounce" style="animation-duration:3s">📚</div>
+          <div class="absolute -bottom-4 -right-4 text-5xl">✏️</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="text-center mb-10">
+      <h3 class="font-display font-black text-3xl text-mishkat-blue-900">تسوق حسب القسم</h3>
+    </div>
+    <div id="categoriesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div class="col-span-full text-center py-8 text-gray-500">⏳ جاري التحميل...</div>
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex justify-between items-center mb-8">
+      <h3 class="font-display font-black text-3xl text-mishkat-blue-900">⭐ منتجات مميزة</h3>
+      <button onclick="showSection('shop')" class="text-mishkat-blue-600 font-bold hover:underline">عرض الكل ←</button>
+    </div>
+    <div id="featuredProducts" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+  </div>
+
+  <!-- Services -->
+  <div class="bg-gradient-to-br from-mishkat-blue-50 to-white py-16">
+    <div class="max-w-7xl mx-auto px-4">
+      <h3 class="font-display font-black text-3xl text-center text-mishkat-blue-900 mb-10">🌟 خدماتنا المميزة</h3>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div onclick="showSection('requests')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer border-r-4 border-mishkat-blue-600">
+          <div class="text-5xl mb-3">📝</div>
+          <h4 class="font-bold text-lg mb-2">بحوث ومشاريع</h4>
+          <p class="text-gray-600 text-sm">اطلب بحثك أو مشروعك بالصوت أو الكتابة مع رفع الملفات</p>
+        </div>
+        <div onclick="showSection('printing')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer border-r-4 border-mishkat-blue-600">
+          <div class="text-5xl mb-3">🖨️</div>
+          <h4 class="font-bold text-lg mb-2">طباعة وتصوير</h4>
+          <p class="text-gray-600 text-sm">ارفع ملفك واحصل عليه مطبوعاً وموصلاً لباب البيت</p>
+        </div>
+        <div onclick="showSection('packages')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer border-r-4 border-mishkat-blue-600">
+          <div class="text-5xl mb-3">📦</div>
+          <h4 class="font-bold text-lg mb-2">حزم مدرسية جاهزة</h4>
+          <p class="text-gray-600 text-sm">حزم متكاملة لكل صف دراسي توفر وقتك ومالك</p>
+        </div>
+        <div onclick="showSection('teachers')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer border-r-4 border-mishkat-blue-600">
+          <div class="text-5xl mb-3">👨‍🏫</div>
+          <h4 class="font-bold text-lg mb-2">حساب المعلمين</h4>
+          <p class="text-gray-600 text-sm">أسعار جملة خاصة للمعلمين والمدارس</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SHOP
+══════════════════════════════════════════════════════════ -->
+<section id="shop-section" class="section hidden">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="font-display font-black text-3xl text-mishkat-blue-900 mb-2">🛍️ المتجر</h2>
+    <p class="text-gray-600 mb-6">تصفح جميع منتجاتنا</p>
+    <div class="bg-white p-4 rounded-2xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
+      <select id="filterCategory" onchange="renderProducts()" class="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none" aria-label="فلترة حسب القسم">
+        <option value="all">كل الأقسام</option>
+      </select>
+      <select id="filterSort" onchange="renderProducts()" class="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none" aria-label="ترتيب المنتجات">
+        <option value="default">الترتيب الافتراضي</option>
+        <option value="price-asc">السعر: من الأقل للأعلى</option>
+        <option value="price-desc">السعر: من الأعلى للأقل</option>
+        <option value="rating">الأعلى تقييماً</option>
+      </select>
+      <input id="filterSearch" oninput="renderProducts()" type="text" placeholder="ابحث..." aria-label="بحث في المنتجات"
+        class="flex-1 min-w-[200px] px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+    </div>
+    <div id="shopProducts" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PACKAGES
+══════════════════════════════════════════════════════════ -->
+<section id="packages-section" class="section hidden">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+      <h2 class="font-display font-black text-3xl text-mishkat-blue-900">📦 الحزم المدرسية الجاهزة</h2>
+      <p class="text-gray-600 mt-2">حزم متكاملة حسب الصف الدراسي — وفّر وقتك وحصل خصم خاص</p>
+    </div>
+    <div id="packagesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     REQUESTS
+══════════════════════════════════════════════════════════ -->
+<section id="requests-section" class="section hidden">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="bg-gradient-to-br from-mishkat-blue-700 to-mishkat-blue-900 text-white p-8 rounded-3xl mb-8 relative overflow-hidden">
+      <div class="absolute inset-0 islamic-pattern opacity-10"></div>
+      <div class="relative">
+        <h2 class="font-display font-black text-3xl mb-2">📝 طلبات البحوث والمشاريع</h2>
+        <p class="text-blue-100">اطلب بحثك، مشروعك، أو أي مهمة كتابية — بالصوت أو الكتابة، وارفع ما تريد من ملفات</p>
+      </div>
+    </div>
+
+    <form id="requestForm" onsubmit="submitRequest(event)" class="bg-white p-6 md:p-8 rounded-3xl shadow-xl space-y-6" novalidate>
+      <!-- نوع الطلب -->
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-3">نوع الطلب <span class="text-red-500">*</span></label>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <label class="cursor-pointer"><input type="radio" name="reqType" value="بحث"  class="peer hidden" required>
+            <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-mishkat-blue-50 transition"><div class="text-3xl mb-1">📄</div><div class="font-semibold">بحث</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="reqType" value="مشروع" class="peer hidden">
+            <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-mishkat-blue-50 transition"><div class="text-3xl mb-1">🎓</div><div class="font-semibold">مشروع تخرج</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="reqType" value="عرض"  class="peer hidden">
+            <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-mishkat-blue-50 transition"><div class="text-3xl mb-1">📊</div><div class="font-semibold">عرض تقديمي</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="reqType" value="آخر"  class="peer hidden">
+            <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-mishkat-blue-50 transition"><div class="text-3xl mb-1">📋</div><div class="font-semibold">طلب آخر</div></div></label>
+        </div>
+      </div>
+
+      <!-- وصف الطلب -->
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-3">وصف الطلب <span class="text-red-500">*</span></label>
+        <div class="border-b-2 border-gray-200 flex gap-4 mb-4">
+          <button type="button" onclick="switchInputTab('text')"  id="tab-text"  class="tab-btn active px-4 py-2 font-semibold">✍️ كتابة</button>
+          <button type="button" onclick="switchInputTab('voice')" id="tab-voice" class="tab-btn px-4 py-2 font-semibold">🎙️ تسجيل صوتي</button>
+        </div>
+        <div id="textInput">
+          <textarea id="requestText" rows="5" placeholder="اشرح طلبك بالتفصيل: الموضوع، عدد الصفحات، الموعد النهائي..."
+            class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-mishkat-blue-600 outline-none resize-none"></textarea>
+        </div>
+        <div id="voiceInput" class="hidden">
+          <div class="bg-gray-50 p-6 rounded-xl text-center">
+            <div id="recordingUI">
+              <button type="button" id="recordBtn" onclick="toggleRecording()"
+                class="w-20 h-20 bg-red-500 text-white rounded-full text-3xl hover:bg-red-600 transition mx-auto block" aria-label="تسجيل صوتي">🎙️</button>
+              <p id="recordStatus" class="mt-3 text-gray-600 font-semibold">اضغط للبدء بالتسجيل</p>
+              <div id="waveform" class="mt-3 hidden h-8 flex items-center justify-center">
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span>
+                <span id="recordTimer" class="mr-3 text-red-500 font-mono"></span>
+              </div>
+            </div>
+            <div id="audioPreview" class="hidden mt-4">
+              <audio id="audioPlayer" controls class="w-full"></audio>
+              <button type="button" onclick="deleteRecording()" class="mt-2 text-red-500 text-sm hover:underline">🗑️ حذف وإعادة التسجيل</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- رفع الملفات -->
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-3">رفع ملفات / صور (اختياري — حد 20MB لكل ملف)</label>
+        <label class="block cursor-pointer">
+          <input type="file" id="filesInput" multiple accept="image/*,.pdf,.doc,.docx,.ppt,.pptx,.txt"
+            onchange="previewFiles(event)" class="hidden">
+          <div class="border-2 border-dashed border-mishkat-blue-300 rounded-xl p-6 text-center hover:bg-mishkat-blue-50 transition">
+            <div class="text-5xl mb-2">📎</div>
+            <p class="font-semibold text-mishkat-blue-700">اضغط لرفع ملفات</p>
+            <p class="text-sm text-gray-500 mt-1">صور، PDF، Word، PowerPoint — حتى 20MB لكل ملف</p>
+          </div>
+        </label>
+        <div id="filesPreview" class="mt-3 flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- معلومات التواصل -->
+      <div class="bg-blue-50 p-4 rounded-xl">
+        <h3 class="font-bold text-mishkat-blue-900 mb-4">📞 معلومات التواصل</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1" for="fullName">الاسم الكامل <span class="text-red-500">*</span></label>
+            <input type="text" id="fullName" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1" for="phone">رقم الهاتف <span class="text-red-500">*</span></label>
+            <input type="tel" id="phone" required pattern="07[7-9][0-9]{7}" placeholder="07XXXXXXXX"
+              class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1" for="email">البريد الإلكتروني</label>
+            <input type="email" id="email" placeholder="example@email.com"
+              class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1" for="userType">نوع المستخدم</label>
+            <select id="userType" class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+              <option value="student">طالب</option>
+              <option value="teacher">معلم</option>
+              <option value="other">آخر</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- طريقة الاستلام -->
+      <div class="bg-blue-50 p-4 rounded-xl">
+        <h3 class="font-bold text-mishkat-blue-900 mb-4">🚚 طريقة الاستلام</h3>
+        <div class="grid md:grid-cols-2 gap-3 mb-4">
+          <label class="cursor-pointer"><input type="radio" name="delivery" value="email"   class="peer hidden" checked onchange="toggleAddress()">
+            <div class="p-3 border-2 border-gray-200 rounded-xl peer-checked:border-mishkat-blue-600 peer-checked:bg-white transition"><div class="font-semibold">📧 إرسال للبريد الإلكتروني</div><div class="text-xs text-gray-500">للطلبات الرقمية فقط</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="delivery" value="address" class="peer hidden" onchange="toggleAddress()">
+            <div class="p-3 border-2 border-gray-200 rounded-xl peer-checked:border-mishkat-blue-600 peer-checked:bg-white transition"><div class="font-semibold">🏠 توصيل لعنوان السكن</div><div class="text-xs text-gray-500">للنسخ المطبوعة</div></div></label>
+        </div>
+        <div id="addressField" class="hidden">
+          <label class="block text-sm font-semibold mb-1" for="address">العنوان التفصيلي <span class="text-red-500">*</span></label>
+          <textarea id="address" rows="2" placeholder="المدينة، الحي، الشارع، رقم المبنى..."
+            class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- طريقة الدفع -->
+      <div class="bg-blue-50 p-4 rounded-xl">
+        <h3 class="font-bold text-mishkat-blue-900 mb-4">💳 طريقة الدفع</h3>
+        <div class="grid md:grid-cols-2 gap-3">
+          <label class="cursor-pointer"><input type="radio" name="payment" value="click" class="peer hidden" required>
+            <div class="p-3 border-2 border-gray-200 rounded-xl peer-checked:border-mishkat-blue-600 peer-checked:bg-white transition"><div class="font-semibold">💸 CliQ — دفع إلكتروني</div><div class="text-xs text-gray-500">دفع فوري</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="payment" value="cash" class="peer hidden">
+            <div class="p-3 border-2 border-gray-200 rounded-xl peer-checked:border-mishkat-blue-600 peer-checked:bg-white transition"><div class="font-semibold">💵 نقدي عند الاستلام</div><div class="text-xs text-gray-500">ادفع عند استلام الطلب</div></div></label>
+        </div>
+      </div>
+
+      <button type="submit" id="submitRequestBtn" class="btn-primary text-white w-full py-4 rounded-xl font-bold text-lg">
+        📤 إرسال الطلب
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PRINTING
+══════════════════════════════════════════════════════════ -->
+<section id="printing-section" class="section hidden">
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+      <h2 class="font-display font-black text-3xl text-mishkat-blue-900">🖨️ خدمة الطباعة والتصوير</h2>
+      <p class="text-gray-600 mt-2">ارفع ملفك، اختر المواصفات، واستلمه عند بابك</p>
+    </div>
+    <form id="printForm" onsubmit="submitPrintOrder(event)" class="bg-white p-6 md:p-8 rounded-3xl shadow-xl space-y-6" novalidate>
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-3">ارفع الملف للطباعة <span class="text-red-500">*</span></label>
+        <label class="block cursor-pointer">
+          <input type="file" required accept=".pdf,.doc,.docx,image/*" class="hidden" id="printFile" onchange="validatePrintFile(event)">
+          <div class="border-2 border-dashed border-mishkat-blue-300 rounded-xl p-8 text-center hover:bg-mishkat-blue-50 transition">
+            <div class="text-6xl mb-2">📄</div>
+            <p class="font-semibold text-mishkat-blue-700">اضغط لرفع الملف</p>
+            <p id="printFileName" class="text-sm text-green-600 mt-2 font-bold"></p>
+          </div>
+        </label>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printName">الاسم الكامل *</label>
+          <input type="text" id="printName" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none"></div>
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printPhone">رقم الهاتف *</label>
+          <input type="tel" id="printPhone" required pattern="07[7-9][0-9]{7}" placeholder="07XXXXXXXX" class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none"></div>
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printType">نوع الطباعة</label>
+          <select id="printType" class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+            <option value="bw">أبيض وأسود (0.05 د/صفحة)</option>
+            <option value="color">ملون (0.20 د/صفحة)</option>
+          </select></div>
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printCopies">عدد النسخ</label>
+          <input type="number" id="printCopies" min="1" max="500" value="1" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none"></div>
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printSize">حجم الورق</label>
+          <select id="printSize" class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+            <option>A4</option><option>A3</option><option>A5</option>
+          </select></div>
+        <div><label class="block font-bold text-mishkat-blue-900 mb-2" for="printBinding">التجليد</label>
+          <select id="printBinding" class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+            <option value="none">بدون تجليد</option>
+            <option value="spiral">تجليد حلزوني (+1 دينار)</option>
+            <option value="hard">تجليد حراري (+2 دينار)</option>
+          </select></div>
+      </div>
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-2" for="printAddress">العنوان للتوصيل</label>
+        <textarea id="printAddress" rows="2" placeholder="المدينة، الحي، الشارع..." class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-mishkat-blue-600 outline-none resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block font-bold text-mishkat-blue-900 mb-2" for="printNotes">ملاحظات إضافية</label>
+        <textarea id="printNotes" rows="3" placeholder="أي تعليمات خاصة..." class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-mishkat-blue-600 outline-none resize-none"></textarea>
+      </div>
+      <button type="submit" id="submitPrintBtn" class="btn-primary text-white w-full py-4 rounded-xl font-bold text-lg">
+        🖨️ تأكيد طلب الطباعة
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TEACHERS
+══════════════════════════════════════════════════════════ -->
+<section id="teachers-section" class="section hidden">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="bg-gradient-to-br from-mishkat-blue-700 to-mishkat-blue-900 text-white p-8 rounded-3xl mb-8 text-center">
+      <div class="text-7xl mb-3">👨‍🏫</div>
+      <h2 class="font-display font-black text-3xl mb-2">برنامج المعلمين والمدارس</h2>
+      <p class="text-blue-100 max-w-2xl mx-auto">انضم لبرنامجنا واستفد من أسعار جملة خاصة، خدمة توصيل مجانية، وحساب مفصّل لكل مدرسة</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-md text-center"><div class="text-4xl mb-2">💰</div><h3 class="font-bold text-mishkat-blue-900 mb-1">خصم حتى 25%</h3><p class="text-sm text-gray-600">على جميع المنتجات</p></div>
+      <div class="bg-white p-6 rounded-2xl shadow-md text-center"><div class="text-4xl mb-2">🚚</div><h3 class="font-bold text-mishkat-blue-900 mb-1">توصيل مجاني</h3><p class="text-sm text-gray-600">لكل الطلبات</p></div>
+      <div class="bg-white p-6 rounded-2xl shadow-md text-center"><div class="text-4xl mb-2">📋</div><h3 class="font-bold text-mishkat-blue-900 mb-1">حساب مفصّل</h3><p class="text-sm text-gray-600">تتبع كل طلباتك</p></div>
+    </div>
+    <form id="teacherForm" onsubmit="submitTeacherForm(event)" class="bg-white p-6 md:p-8 rounded-3xl shadow-xl space-y-4" novalidate>
+      <h3 class="font-display font-black text-xl text-mishkat-blue-900 mb-4">سجّل كمعلم/مدرسة</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <input type="text"  id="tFullName" required placeholder="الاسم الكامل *"         class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+        <input type="text"  id="tSchool"   required placeholder="اسم المدرسة *"           class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+        <input type="tel"   id="tPhone"    required pattern="07[7-9][0-9]{7}" placeholder="رقم الهاتف *" class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+        <input type="email" id="tEmail"    required placeholder="البريد الإلكتروني *"      class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+        <input type="text"  id="tSubject"            placeholder="المادة التي تدرّسها"     class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+        <input type="text"  id="tGov"                placeholder="المحافظة"               class="px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+      </div>
+      <button type="submit" id="submitTeacherBtn" class="btn-primary text-white w-full py-4 rounded-xl font-bold text-lg">
+        ✅ تسجيل حساب معلم
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     MY ORDERS
+══════════════════════════════════════════════════════════ -->
+<section id="myorders-section" class="section hidden">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <h2 class="font-display font-black text-3xl text-mishkat-blue-900 mb-6">📋 تتبع طلباتي</h2>
+    <div class="bg-white p-6 rounded-2xl shadow-md mb-6">
+      <label class="block font-bold text-mishkat-blue-900 mb-2" for="trackPhone">أدخل رقم هاتفك لعرض طلباتك</label>
+      <div class="flex gap-2">
+        <input type="tel" id="trackPhone" placeholder="07XXXXXXXX"
+          class="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none"
+          onkeypress="if(event.key==='Enter') trackOrders()">
+        <button onclick="trackOrders()" class="btn-primary text-white px-6 py-3 rounded-lg font-bold">🔍 بحث</button>
+      </div>
+    </div>
+    <div id="myOrdersResult"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     ADMIN PANEL — Full Dashboard with Sidebar
+══════════════════════════════════════════════════════════ -->
+<section id="admin-section" class="section hidden">
+  <div class="flex h-screen overflow-hidden bg-gray-100" style="height:calc(100vh - 120px)">
+
+    <!-- ── Sidebar ──────────────────────────────────────────── -->
+    <aside id="adminSidebar"
+      class="w-64 bg-gray-900 text-white flex flex-col shrink-0 transition-transform duration-300
+             fixed md:relative inset-y-0 right-0 z-40 translate-x-full md:translate-x-0"
+      style="height:calc(100vh - 120px)">
+
+      <!-- Logo -->
+      <div class="p-5 border-b border-gray-700">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🕌</div>
+          <div>
+            <div class="font-black text-sm">لوحة التحكم</div>
+            <div class="text-xs text-gray-400">مكتبة المشكاة</div>
+          </div>
+        </div>
+        <!-- Real-time indicator -->
+        <div class="flex items-center gap-2 mt-3 text-xs text-gray-400">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          متصل · يتجدد تلقائياً
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+        <!-- الطلبات -->
+        <div class="text-xs text-gray-500 font-bold px-3 pt-3 pb-1">الطلبات</div>
+        <button onclick="showAdminView('dashboard')" data-view="dashboard"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">📊</span> لوحة المعلومات
+        </button>
+        <button onclick="showAdminView('orders')" data-view="orders"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">🛒</span> طلبات الشراء
+          <span id="badgeOrders" class="mr-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
+        </button>
+        <button onclick="showAdminView('research')" data-view="research"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">📝</span> طلبات البحوث
+          <span id="badgeResearch" class="mr-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
+        </button>
+        <button onclick="showAdminView('print')" data-view="print"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">🖨️</span> طلبات الطباعة
+          <span id="badgePrint" class="mr-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
+        </button>
+        <button onclick="showAdminView('teachers')" data-view="teachers"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">👨‍🏫</span> طلبات المعلمين
+          <span id="badgeTeachers" class="mr-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
+        </button>
+
+        <!-- المنتجات والمخزون -->
+        <div class="text-xs text-gray-500 font-bold px-3 pt-4 pb-1">المنتجات والمخزون</div>
+        <button onclick="showAdminView('products')" data-view="products"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">📦</span> إدارة المنتجات
+        </button>
+        <button onclick="showAdminView('categories')" data-view="categories"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">🗂️</span> إدارة الأقسام
+        </button>
+        <button onclick="showAdminView('packages')" data-view="packages"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">📚</span> إدارة الحزم
+        </button>
+
+        <!-- التسويق -->
+        <div class="text-xs text-gray-500 font-bold px-3 pt-4 pb-1">التسويق</div>
+        <button onclick="showAdminView('discounts')" data-view="discounts"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">🎫</span> أكواد الخصم
+        </button>
+        <button onclick="showAdminView('customers')" data-view="customers"
+          class="adm-nav w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition">
+          <span class="text-lg">👥</span> العملاء
+        </button>
+      </nav>
+
+      <!-- Logout -->
+      <div class="p-3 border-t border-gray-700">
+        <button onclick="adminLogout()"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-900/30 hover:text-red-300 transition">
+          <span class="text-lg">🚪</span> تسجيل الخروج
+        </button>
+        <button onclick="showSection('home')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:bg-gray-800 hover:text-white transition mt-1">
+          <span class="text-lg">🏠</span> العودة للموقع
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ──────────────────────────────────────── -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Top Bar -->
+      <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shrink-0 shadow-sm">
+        <!-- Mobile menu toggle -->
+        <button onclick="toggleAdminSidebar()"
+          class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-600">
+          ☰
+        </button>
+        <h2 id="adminPageTitle" class="font-display font-black text-xl text-gray-800 flex-1">📊 لوحة المعلومات</h2>
+        <!-- Refresh -->
+        <button onclick="showAdminView(adminView)"
+          class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-600 text-lg" title="تحديث">
+          🔄
+        </button>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div id="adminViewContent" class="flex-1 overflow-y-auto p-4 md:p-6">
+        <div class="flex items-center justify-center py-24">
+          <div class="text-center">
+            <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <div class="text-gray-500 font-semibold">جاري التحميل...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div id="adminSidebarOverlay" onclick="toggleAdminSidebar()"
+    class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+</section>
+
+</main>
+
+<!-- ── Delete Confirm Modal ────────────────────────────────── -->
+<div id="deleteConfirmModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+  <div class="modal-overlay absolute inset-0" onclick="closeDeleteConfirm()"></div>
+  <div class="relative bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+    <div class="bg-red-600 text-white p-4 text-center">
+      <div class="text-4xl mb-1">⚠️</div>
+      <h3 class="font-bold text-lg">تأكيد الحذف</h3>
+    </div>
+    <div class="p-5">
+      <p id="deleteConfirmText" class="text-gray-700 text-center mb-5 font-semibold"></p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteConfirm()"
+          class="flex-1 py-2.5 rounded-xl border-2 border-gray-200 font-bold text-gray-600 hover:bg-gray-50">
+          إلغاء
+        </button>
+        <button id="deleteConfirmBtn" onclick="confirmDelete()"
+          class="flex-1 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700">
+          حذف
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Cart Drawer ────────────────────────────────────────── -->
+<div id="cartDrawer" class="fixed inset-0 z-50 hidden" role="dialog" aria-label="سلة المشتريات">
+  <div class="modal-overlay absolute inset-0" onclick="toggleCart()"></div>
+  <div class="drawer absolute left-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col"
+       style="transform: translateX(-100%)" id="cartContent">
+    <div class="bg-mishkat-blue-800 text-white p-4 flex justify-between items-center">
+      <h3 class="font-bold text-xl">🛒 سلة المشتريات</h3>
+      <button onclick="toggleCart()" class="text-2xl hover:opacity-70" aria-label="إغلاق السلة">✕</button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div class="border-t-2 border-gray-100 p-4 space-y-3">
+      <div class="flex justify-between text-lg font-bold">
+        <span>المجموع:</span>
+        <span id="cartTotal" class="text-mishkat-blue-600">0 دينار</span>
+      </div>
+      <button onclick="openCheckoutModal()" class="btn-primary text-white w-full py-3 rounded-xl font-bold">
+        ✅ إتمام الشراء
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Checkout Modal ─────────────────────────────────────── -->
+<div id="checkoutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" role="dialog" aria-label="إتمام الشراء">
+  <div class="modal-overlay absolute inset-0" onclick="closeCheckoutModal()"></div>
+  <div class="relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div class="bg-mishkat-blue-800 text-white p-5 rounded-t-3xl flex justify-between items-center">
+      <h3 class="font-bold text-xl">✅ إتمام الشراء</h3>
+      <button onclick="closeCheckoutModal()" class="text-2xl hover:opacity-70" aria-label="إغلاق">✕</button>
+    </div>
+    <form id="checkoutForm" onsubmit="completeOrder(event)" class="p-6 space-y-4" novalidate>
+      <input type="text"  id="coName"    required placeholder="الاسم الكامل *"              class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+      <input type="tel"   id="coPhone"   required pattern="07[7-9][0-9]{7}" placeholder="رقم الهاتف * (07XXXXXXXX)" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+      <input type="email" id="coEmail"   placeholder="البريد الإلكتروني (اختياري)"          class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+      <textarea id="coAddress" required rows="2" placeholder="عنوان التوصيل *"              class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none resize-none"></textarea>
+
+      <div>
+        <label class="block font-bold text-sm mb-2">طريقة الدفع *</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="cursor-pointer"><input type="radio" name="coPayment" value="click" class="peer hidden" required>
+            <div class="p-3 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-blue-50"><div class="text-2xl">💸</div><div class="font-semibold text-sm">CliQ</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="coPayment" value="cash" class="peer hidden">
+            <div class="p-3 border-2 border-gray-200 rounded-xl text-center peer-checked:border-mishkat-blue-600 peer-checked:bg-blue-50"><div class="text-2xl">💵</div><div class="font-semibold text-sm">نقدي عند الاستلام</div></div></label>
+        </div>
+      </div>
+
+      <!-- ✅ كود الخصم — يُرسَل للسيرفر ولا يُتحقَّق منه على العميل -->
+      <div class="bg-amber-50 p-4 rounded-xl border-2 border-amber-200">
+        <label class="block font-bold text-sm mb-2">🎫 كود الخصم (اختياري)</label>
+        <div class="flex gap-2">
+          <input type="text" id="coDiscountInput" placeholder="أدخل كود الخصم"
+            class="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none">
+          <button type="button" onclick="previewDiscountCode()"
+            class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold whitespace-nowrap">✓ تطبيق</button>
+        </div>
+        <div id="discountResult" class="text-sm mt-2"></div>
+      </div>
+
+      <div class="bg-blue-50 p-3 rounded-xl font-bold">
+        <div class="flex justify-between">
+          <span>المجموع:</span>
+          <span id="coOriginalTotal">0 دينار</span>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>🚚 التوصيل مجاني للطلبات فوق 20 دينار</span>
+        </div>
+        <div class="flex justify-between text-lg mt-2 pt-2 border-t border-blue-200">
+          <span>المجموع الكلي:</span>
+          <span id="coTotal" class="text-mishkat-blue-700">0 دينار</span>
+        </div>
+      </div>
+
+      <button type="submit" id="coSubmitBtn" class="btn-primary text-white w-full py-3 rounded-xl font-bold">
+        🎯 تأكيد الطلب
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Admin Login Modal ──────────────────────────────────── -->
+<div id="adminLoginModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" role="dialog" aria-label="تسجيل دخول المدير">
+  <div class="modal-overlay absolute inset-0"></div>
+  <div class="relative bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden">
+    <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6 text-center">
+      <div class="text-5xl mb-2">🔐</div>
+      <h3 class="font-bold text-xl">دخول لوحة التحكم</h3>
+    </div>
+    <form onsubmit="doAdminLogin(event)" class="p-6 space-y-4">
+      <div>
+        <label class="block font-bold text-sm mb-1" for="adminPassword">كلمة المرور</label>
+        <input type="password" id="adminPassword" required autocomplete="current-password"
+          class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-mishkat-blue-600 outline-none" placeholder="••••••••">
+      </div>
+      <button type="submit" id="adminLoginBtn" class="btn-primary text-white w-full py-3 rounded-xl font-bold">
+        🔐 دخول
+      </button>
+      <button type="button" onclick="hideAdminLogin()" class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm">
+        إلغاء
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── WhatsApp Floating ───────────────────────────────────── -->
+<a href="https://wa.me/962791234567" target="_blank" rel="noopener noreferrer"
+   class="whatsapp-btn fixed bottom-6 left-6 w-14 h-14 rounded-full flex items-center justify-center text-3xl z-30 text-white"
+   aria-label="تواصل عبر واتساب">💬</a>
+
+<!-- ── Toast Container ────────────────────────────────────── -->
+<div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none" aria-live="polite"></div>
+
+<!-- ── Footer ────────────────────────────────────────────── -->
+<footer class="bg-mishkat-blue-900 text-white mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-3xl">🕌</span>
+        <h3 class="font-display font-black text-xl">مكتبة المشكاة</h3>
+      </div>
+      <p class="text-blue-200 text-sm">نور العلم بين يديك. خدمة الطلاب والمعلمين منذ سنوات.</p>
+    </div>
+    <div>
+      <h4 class="font-bold mb-3">روابط سريعة</h4>
+      <ul class="space-y-1 text-blue-200 text-sm">
+        <li><button onclick="showSection('shop')"     class="hover:text-yellow-300">المتجر</button></li>
+        <li><button onclick="showSection('packages')" class="hover:text-yellow-300">الحزم المدرسية</button></li>
+        <li><button onclick="showSection('requests')" class="hover:text-yellow-300">طلب بحث</button></li>
+        <li><button onclick="showSection('teachers')" class="hover:text-yellow-300">حساب المعلمين</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-3">تواصل معنا</h4>
+      <ul class="space-y-1 text-blue-200 text-sm">
+        <li>📞 0791234567</li>
+        <li>✉️ info@almishkat.com</li>
+        <li>📍 الأردن — عمّان</li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-3">تابعنا</h4>
+      <div class="flex gap-3">
+        <a href="#" aria-label="فيسبوك" class="w-10 h-10 bg-mishkat-blue-700 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-mishkat-blue-900 transition">📘</a>
+        <a href="#" aria-label="إنستغرام" class="w-10 h-10 bg-mishkat-blue-700 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-mishkat-blue-900 transition">📷</a>
+        <a href="https://wa.me/962791234567" target="_blank" rel="noopener" aria-label="واتساب"
+           class="w-10 h-10 bg-mishkat-blue-700 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-mishkat-blue-900 transition">💬</a>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-mishkat-blue-700 py-4 text-center text-sm text-blue-200">
+    © 2026 مكتبة المشكاة — جميع الحقوق محفوظة
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+/* ============================================================
+   مكتبة المشكاة v4 — Styles
+   ============================================================ */
+
+/* ── خطوط عربية ─────────────────────────────────────────── */
+* { font-family: 'Tajawal', sans-serif; }
+.font-display { font-family: 'Cairo', sans-serif; }
+.font-arabic  { font-family: 'Amiri', serif; }
+
+/* ── خلفية وألوان أساسية ─────────────────────────────────── */
+body { background: #fafbff; color: #0f172a; transition: background 0.3s, color 0.3s; }
+body.dark { background: #0f172a; color: #e2e8f0; }
+
+.pattern-bg {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
+}
+.dark .pattern-bg { background-image:
+  radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+  radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.10) 0%, transparent 50%);
+}
+
+.islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232563eb' fill-opacity='0.04'%3E%3Cpath d='M30 0l15 15-15 15-15-15z'/%3E%3Cpath d='M30 30l15 15-15 15-15-15z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.4)); }
+  50%       { filter: drop-shadow(0 0 35px rgba(251, 191, 36, 0.7)); }
+}
+.lantern-glow { animation: glow 3s ease-in-out infinite; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+.recording-pulse { animation: pulse-ring 1.5s infinite; }
+
+@keyframes wave {
+  0%, 100% { height: 8px; }
+  50%       { height: 24px; }
+}
+.wave-bar {
+  display: inline-block; width: 3px; background: #ef4444;
+  margin: 0 1px; border-radius: 2px; animation: wave 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes slideDown {
+  from { transform: translate(-50%, -100%); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}
+.toast { animation: slideDown 0.3s ease-out; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-spinner {
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block; vertical-align: middle;
+}
+
+/* ── بطاقات المنتجات ─────────────────────────────────────── */
+.product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.2);
+}
+.dark .product-card { background: #1e293b !important; border: 1px solid #334155; }
+
+/* ── أزرار ───────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+  transition: all 0.3s;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  transition: all 0.3s;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+}
+.btn-danger:hover { transform: translateY(-2px); }
+
+/* ── Navigation ──────────────────────────────────────────── */
+.nav-link { position: relative; transition: color 0.3s; }
+.nav-link::after {
+  content: ''; position: absolute; bottom: -4px; right: 0;
+  width: 0; height: 2px; background: #2563eb; transition: width 0.3s;
+}
+.nav-link:hover::after, .nav-link.active::after { width: 100%; }
+.dark .nav-link { color: #cbd5e1; }
+.dark .nav-link:hover { color: #60a5fa; }
+
+/* ── بطاقات الأقسام ──────────────────────────────────────── */
+.category-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+}
+.dark .category-card { background: linear-gradient(135deg, #1e293b 0%, #1a2744 100%); }
+.category-card:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+  color: white; transform: scale(1.03);
+}
+.category-card:hover .cat-icon,
+.category-card:hover .cat-name { color: white; }
+.category-card:hover .cat-count { color: rgba(255,255,255,0.8); }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #1e3a8a; }
+.dark ::-webkit-scrollbar-track { background: #1e293b; }
+
+/* ── Drawer & Modals ─────────────────────────────────────── */
+.drawer  { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.modal-overlay { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); }
+
+/* ── WhatsApp ────────────────────────────────────────────── */
+.whatsapp-btn {
+  background: #25D366;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: all 0.3s;
+}
+.whatsapp-btn:hover { transform: scale(1.1) rotate(5deg); }
+
+/* ── Tabs ────────────────────────────────────────────────── */
+.tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; }
+.tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+.dark .tab-btn.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+
+/* ── Dark Mode Cards ─────────────────────────────────────── */
+.dark .bg-white { background: #1e293b !important; }
+.dark .bg-blue-50,
+.dark .bg-mishkat-blue-50 { background: #162032 !important; }
+.dark .text-gray-600 { color: #94a3b8 !important; }
+.dark .text-gray-500 { color: #64748b !important; }
+.dark .border-gray-200 { border-color: #334155 !important; }
+.dark input, .dark textarea, .dark select {
+  background: #0f172a; color: #e2e8f0; border-color: #334155;
+}
+
+/* ── Toast colours ───────────────────────────────────────── */
+.toast-success { background: #16a34a; }
+.toast-warn    { background: #d97706; }
+.toast-error   { background: #dc2626; }
+
+/* ── Skeleton Loading ────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+.dark .skeleton { background: linear-gradient(90deg, #1e293b 25%, #273344 50%, #1e293b 75%); background-size: 200% 100%; }
+
+/* ── رسائل الحالة ────────────────────────────────────────── */
+.status-pending    { background: #fef3c7; color: #92400e; }
+.status-confirmed  { background: #dbeafe; color: #1e40af; }
+.status-preparing,
+.status-reviewing,
+.status-in-progress,
+.status-printing   { background: #ede9fe; color: #5b21b6; }
+.status-ready      { background: #d1fae5; color: #064e3b; }
+.status-delivered  { background: #d1fae5; color: #064e3b; }
+.status-cancelled  { background: #fee2e2; color: #991b1b; }
+.dark .status-pending   { background: #451a03; color: #fcd34d; }
+.dark .status-confirmed { background: #1e3a5f; color: #93c5fd; }
+
+/* ── Image upload preview ────────────────────────────────── */
+.file-preview-item {
+  display: flex; align-items: center; gap: 8px;
+  background: #eff6ff; padding: 6px 12px; border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .hero-title { font-size: 2.5rem !important; }
+  .product-card:hover { transform: none; }
+}
+
+/* ============================================================
+   Admin Panel Styles
+   ============================================================ */
+
+/* ── Sidebar Navigation ──────────────────────────────────── */
+.adm-nav-active {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+.adm-nav-active span { color: white !important; }
+
+/* ── Admin Input ─────────────────────────────────────────── */
+.adm-input {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.625rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+  font-family: inherit;
+}
+.adm-input:focus { border-color: #2563eb; }
+.dark .adm-input { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+
+/* ── Admin Tables ────────────────────────────────────────── */
+#adminViewContent table th { font-weight: 700; font-size: 0.8rem; }
+#adminViewContent table td { vertical-align: middle; }
+#adminViewContent table tr { transition: background 0.15s; }
+
+/* ── Mobile Sidebar ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  #adminSidebar { transform: translateX(100%); }
+  #adminSidebar.open { transform: translateX(0); }
+  #adminSidebarOverlay.open { display: block; }
+}
+
+/* ── Stat Cards ──────────────────────────────────────────── */
+#adminViewContent .stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#adminViewContent .stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -8px rgba(0,0,0,0.2);
+}
+
+/* ── Admin Content ───────────────────────────────────────── */
+#adminViewContent {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+#adminViewContent::-webkit-scrollbar { width: 5px; }
+#adminViewContent::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+
+/* ── Details Summary ─────────────────────────────────────── */
+details summary::-webkit-details-marker { display: none; }
+
+/* ── Gradient Button Selector ────────────────────────────── */
+.gradient-btn { transition: transform 0.15s, border-color 0.15s; }
+.gradient-btn:hover { transform: scale(1.15); }
