@@ -253,6 +253,25 @@ CREATE POLICY "anon_read_own_print" ON print_orders
 DROP POLICY IF EXISTS "anon_check_discount" ON discount_codes;
 -- لا سياسة SELECT للـ anon → جدول discount_codes مغلق تماماً من العميل
 
+
+-- ========== Storage Policies ==========
+-- تسمح للمستخدمين غير المسجلين برفع الملفات إلى المخزن
+DROP POLICY IF EXISTS "anon_upload_voice_notes" ON storage.objects;
+DROP POLICY IF EXISTS "anon_upload_attachments" ON storage.objects;
+DROP POLICY IF EXISTS "anon_upload_print_files" ON storage.objects;
+
+CREATE POLICY "anon_upload_voice_notes" ON storage.objects
+  FOR INSERT TO anon
+  WITH CHECK (bucket_id = 'voice-notes');
+
+CREATE POLICY "anon_upload_attachments" ON storage.objects
+  FOR INSERT TO anon
+  WITH CHECK (bucket_id = 'attachments');
+
+CREATE POLICY "anon_upload_print_files" ON storage.objects
+  FOR INSERT TO anon
+  WITH CHECK (bucket_id = 'print-files');
+
 -- ========== بيانات تجريبية ==========
 
 INSERT INTO categories (id, name, icon, display_order) VALUES

@@ -604,12 +604,18 @@ function validatePrintFile(e) {
 }
 
 async function uploadFile(file, bucket, folder = '') {
-  const safeName = file.name.replace(/[^a-zA-Z0-9.\u0600-\u06ff_-]/g, '_');
-  const fileName = `${folder}${Date.now()}_${safeName}`;
-  const { data, error } = await sb.storage.from(bucket).upload(fileName, file);
-  if (error) throw error;
-  const { data: { publicUrl } } = sb.storage.from(bucket).getPublicUrl(fileName);
-  return publicUrl;
+  // Upload via Edge Function (uses service_role internally, bypasses anon RLS)
+  const formData = new FormData();
+  formData.append('bucket', bucket);
+  formData.append('file', file);
+  const res = await fetch(`${FUNCTIONS_URL}/upload-file`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_ANON_KEY },
+    body: formData,
+  });
+  const result = await res.json();
+  if (!result.success) throw new Error(result.error || 'فشل رفع الملف');
+  return result.url;
 }
 
 // ============================================================
