@@ -145,6 +145,27 @@ const RESEARCH_STATUSES = [['pending','قيد المراجعة'],['reviewing','�
 const PRINT_STATUSES    = [['pending','قيد المراجعة'],['confirmed','مؤكد'],['printing','يُطبع'],['ready','جاهز'],['delivered','تم التسليم'],['cancelled','ملغي']];
 const TEACHER_STATUSES  = [['pending','قيد المراجعة'],['approved','موافق'],['rejected','مرفوض']];
 
+// ============================================================
+// Image Render - URL to img, emoji to text
+// ============================================================
+function renderImage(src) {
+  if (!src) return '\uD83D\uDCE6';
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return '<img src="' + esc(src) + '" alt="\u0635\u0648\u0631\u0629" class="w-12 h-12 object-cover rounded-xl" onerror="this.outerHTML=\u0027\uD83D\uDCE6\u0027">';
+  }
+  return esc(src);
+}
+
+// ============================================================
+// Delete Item
+// ============================================================
+async function deleteItem(id, table, viewName, label) {
+  if (!label) label = '\u0627\u0644\u0633\u062C\u0644';
+  if (!confirm('\u26A0\uFE0F \u062A\u0623\u0643\u064A\u062F \u0627\u0644\u062D\u0630\u0641\n\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u062D\u0630\u0641 ' + label + ' #' + id + '\u061F')) return;
+  const res = await adminAPI('delete', table, { id });
+  if (res) { toast('\u2705 \u062A\u0645 \u0627\u0644\u062D\u0630\u0641', 'success', 2000); showAdminView(viewName); }
+}
+
 async function quickUpdateStatus(table, id, status) {
   const res = await adminAPI('update', table, { id, data: { status } });
   if (res) toast('✓ تم تحديث الحالة', 'success', 2000);
@@ -360,6 +381,9 @@ function orderCard(o) {
                class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">
               💬 واتساب
             </a>
+            <button onclick="deleteItem('${o.id}', 'orders', 'orders', 'الطلب')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-700">
+              🗑️ حذف
+            </button>
           </div>
         </div>
       </div>
@@ -523,6 +547,9 @@ function researchCard(r) {
           💬 واتساب
         </a>
       </div>
+        <button onclick="deleteItem('${r.id}', 'research_requests', 'research', 'طلب البحث')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-700">
+          🗑️ حذف
+        </button>
     </div>`;
 }
 
@@ -600,6 +627,9 @@ function printCard(p) {
           💬 واتساب
         </a>
       </div>
+        <button onclick="deleteItem('${p.id}', 'print_orders', 'print', 'طلب الطباعة')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-700">
+          🗑️ حذف
+        </button>
     </div>`;
 }
 
@@ -666,6 +696,9 @@ function teacherCard(t) {
         </a>
         ${statusSelect(t.status, TEACHER_STATUSES, 'teacher_applications', t.id)}
       </div>
+        <button onclick="deleteItem('${t.id}', 'teacher_applications', 'teachers', 'طلب المعلم')" class="bg-red-500 text-white px-3 py-2 rounded-xl text-sm font-bold hover:bg-red-700">
+          🗑️ حذف
+        </button>
     </div>`;
 }
 
@@ -737,7 +770,7 @@ async function renderProductsView() {
               <tr class="hover:bg-gray-50 transition">
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-2xl">${esc(p.image || '📦')}</span>
+                    <span class="text-2xl">${renderImage(p.image)}</span>
                     <div>
                       <div class="font-semibold">${esc(p.name)}</div>
                       ${p.is_featured ? '<span class="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">⭐ مميز</span>' : ''}

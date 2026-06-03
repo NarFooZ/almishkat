@@ -16,10 +16,10 @@ const ALLOWED: Record<string, string[]> = {
   packages:             ['select','insert','update','delete'],
   discount_codes:       ['select','insert','update','delete'],
   customers:            ['select','update'],
-  orders:               ['select','update'],
-  research_requests:    ['select','update'],
-  print_orders:         ['select','update'],
-  teacher_applications: ['select','update'],
+  orders:               ['select','update','delete'],
+  research_requests:    ['select','update','delete'],
+  print_orders:         ['select','update','delete'],
+  teacher_applications: ['select','update','delete'],
   loyalty_transactions: ['select'],
 };
 

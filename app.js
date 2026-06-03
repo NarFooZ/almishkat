@@ -38,6 +38,17 @@ function esc(str) {
 }
 
 // ============================================================
+// ✅ Image Render — URL → <img>, emoji → text
+// ============================================================
+function renderImage(src) {
+  if (!src) return '📦';
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return '<img src="' + esc(src) + '" alt="' + String.fromCodePoint(0x635, 0x648, 0x631, 0x629) + '" class="max-w-full" style="max-height:200px;object-fit:contain" onerror="this.outerHTML=' + "'" + String.fromCodePoint(0x1F4E6) + "'" + '">';
+  }
+  return esc(src);
+}
+
+// ============================================================
 // Navigation
 // ============================================================
 function showSection(name) {
@@ -299,7 +310,7 @@ function productCard(p) {
   return `
     <div class="product-card bg-white rounded-2xl shadow-md overflow-hidden">
       <div class="relative bg-gradient-to-br from-mishkat-blue-50 to-blue-100 p-8 text-center">
-        <div class="text-7xl">${esc(p.image || '📦')}</div>
+        <div class="text-7xl">${renderImage(p.image)}</div>
         ${discount > 0 ? `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">-${discount}%</span>` : ''}
         ${stockBadge}
       </div>
@@ -439,7 +450,7 @@ function updateCartUI() {
       ? '<div class="text-center py-12 text-gray-500"><div class="text-6xl mb-3">🛒</div>السلة فارغة</div>'
       : cart.map(i => `
           <div class="flex items-center gap-3 bg-blue-50 p-3 rounded-xl">
-            <div class="text-3xl">${esc(i.image)}</div>
+            <div class="text-3xl">${renderImage(i.image)}</div>
             <div class="flex-1 min-w-0">
               <div class="font-semibold text-sm truncate">${esc(i.name)}</div>
               <div class="text-mishkat-blue-700 font-bold">${esc(String(i.price))} د</div>
